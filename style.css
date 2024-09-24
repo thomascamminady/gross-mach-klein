@@ -7,7 +7,7 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #f4f4f9;
+    background-color: #f3ebe0;
     color: #333;
     padding: 40px;
     display: flex;
@@ -41,17 +41,17 @@ label {
 input {
     width: 100%;
     padding: 15px;
-    margin-top: 10px;
-    margin-bottom: 20px;
+    margin: 10px 0 20px;
+    /* Combine margin properties for simplicity */
     font-size: 1.2rem;
     border: 1px solid #ccc;
     border-radius: 6px;
-    outline-color: #007bff;
+    outline-color: #f78e0e;
     /* Outline color for focus */
 }
 
 button {
-    background-color: #007bff;
+    background-color: #f78e0e;
     color: #fff;
     border: none;
     padding: 15px 20px;
@@ -63,11 +63,11 @@ button {
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #c7720a;
 }
 
 button:focus {
-    outline: 3px solid #0056b3;
+    outline: 3px solid #a96108;
     /* Focus outline */
 }
 
@@ -93,7 +93,7 @@ button:focus {
 
 .remaining-space {
     font-size: 1.1rem;
-    color: #e74c3c;
+    color: #f78e0e;
     /* Consistent color for remaining space */
 }
 
