@@ -66,12 +66,26 @@
             const lengthsInput = document.getElementById('lengths').value;
             const L = parseInt(document.getElementById('longStickLength').value);
 
-            if (!lengthsInput || isNaN(L)) {
+            // Check if the large stick length is valid
+            if (isNaN(L) || L <= 0) {
+                alert('Bitte geben Sie eine gültige Länge für den großen Stick ein.');
+                return;
+            }
+
+            // Split the input into an array, using both commas and whitespace as delimiters
+            const lengths = lengthsInput
+                .split(/[\s,]+/)  // Split by whitespace or commas
+                .map(length => length.trim()) // Trim whitespace from each entry
+                .filter(length => length !== '') // Remove any empty strings
+                .map(Number) // Convert to numbers
+                .filter(length => !isNaN(length)); // Remove any non-numeric values
+
+            // Check if the lengths array is empty or if any length is greater than the large stick length
+            if (lengths.length === 0) {
                 alert('Keine gültigen Längen.');
                 return;
             }
 
-            const lengths = lengthsInput.split(',').map(Number);
             if (lengths.some(length => length > L)) {
                 alert('Einige der kleinen Maße sind größer als das große Maß.');
                 return;
@@ -106,6 +120,7 @@
 
             return bins;
         }
+
 
         function drawBarChart(pieces, remainingSpace, container) {
             const chartWidth = 500;
