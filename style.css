@@ -107,3 +107,28 @@ button:focus {
     margin-top: 15px;
     height: 40px;
 }
+
+
+@media print {
+
+    /* Hide everything except the cuts when printing */
+    body * {
+        visibility: hidden;
+    }
+
+    #printableCuts,
+    #printableCuts * {
+        visibility: visible;
+    }
+
+    #printableCuts {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+}
+
+.button-space {
+    margin-bottom: 20px;
+    /* Add space below buttons */
+}
