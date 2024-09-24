@@ -206,10 +206,41 @@
 
         function printCuts() {
             const printableCutsDiv = document.getElementById('printableCuts');
+
+            // Prepare the printable cuts based on the results displayed
+            const resultsDiv = document.getElementById('results');
+            const results = resultsDiv.children; // Get all children of results
+
+            printableCutsDiv.innerHTML = ''; // Clear previous printable cuts
+
+            // Loop through each stick result to create a line-by-line output for printing
+            Array.from(results).forEach((result) => {
+                const stickInfo = result.querySelector('.stick-info').innerHTML; // Get stick info
+                const cutsList = result.querySelector('.cuts-list'); // Get cuts list
+
+                printableCutsDiv.innerHTML += `<div>${stickInfo}</div>`; // Add stick info to printable div
+
+                // Append "Schnitte:" and a newline before listing the cuts
+                printableCutsDiv.innerHTML += `Schnitte:<br/>`; // Add newline after "Schnitte:"
+
+                // Split the cuts by " | " (or any delimiter you used in the display)
+                const cuts = cutsList.innerText.replace('Schnitte: ', '').split(' | '); // Split cuts into an array
+
+                // Append each cut on a new line
+                cuts.forEach((cut) => {
+                    printableCutsDiv.innerHTML += `${cut}<br/>`; // Append each cut with a line break
+                });
+
+                printableCutsDiv.innerHTML += `<hr style="border: none; border-top: 1px solid #ccc; margin: 10px 0;" />`; // Divider
+            });
+
             printableCutsDiv.style.display = 'block'; // Show the printable cuts div
             window.print(); // Open the print dialog
             printableCutsDiv.style.display = 'none'; // Hide it again after printing
         }
+
+
+
     </script>
 </body>
 
