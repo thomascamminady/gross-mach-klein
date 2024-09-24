@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aus groß mach klein</title>
+
+    <!-- Link to external CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Roboto+Mono:wght@400&display=swap"
+        rel="stylesheet">
+
+    <style>
+        @media print {
+
+            /* Hide everything except the cuts when printing */
+            body * {
+                visibility: hidden;
+            }
+
+            #printableCuts,
+            #printableCuts * {
+                visibility: visible;
+            }
+
+            #printableCuts {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+
+        .button-space {
+            margin-bottom: 20px;
+            /* Add space below buttons */
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Aus groß mach klein</h1>
+
+        <label for="lengths">Gewünschte Schnittlängen (Komma-getrennt):</label><br>
+        <input type="text" id="lengths" placeholder="600,500,300,200,100,200,300,400,200"><br>
+
+        <label for="longStickLength">Großes Maß:</label><br>
+        <input type="number" id="longStickLength" placeholder="1000"><br>
+
+        <button class="button-space" onclick="solveProblem()">Plan erstellen</button>
+        <button class="button-space" id="printButton" style="display: none;" onclick="printCuts()">Drucken</button>
+        <!-- Print button initially hidden -->
+
+        <div id="results"></div>
+        <div id="printableCuts" style="display: none;"></div> <!-- Hidden div for printing -->
+    </div>
+
+    <script>
+        function solveProblem() {
+            const lengthsInput = document.getElementById('lengths').value;
+            const L = parseInt(document.getElementById('longStickLength').value);
+
+            if (!lengthsInput || isNaN(L)) {
+                alert('Keine gültigen Längen.');
+                return;
+            }
+
+            const lengths = lengthsInput.split(',').map(Number);
+            if (lengths.some(length => length > L)) {
+                alert('Einige der kleinen Maße sind größer als das große Maß.');
+                return;
+            }
+
+            const result = binPacking(lengths, L);
+            displayResult(result);
+            document.getElementById('printButton').style.display = 'block'; // Show print button after the plan is created
+        }
+
+        function binPacking(lengths, L) {
+            lengths.sort((a, b) => b - a);
+            const bins = [];
+
+            lengths.forEach(length => {
+                let placed = false;
+                for (let i = 0; i < bins.length; i++) {
+                    if (bins[i].remainingSpace >= length) {
+                        bins[i].pieces.push(length);
+                        bins[i].remainingSpace -= length;
+                        placed = true;
+                        break;
+                    }
+                }
+                if (!placed) {
+                    bins.push({
+                        remainingSpace: L - length,
+                        pieces: [length]
+                    });
+                }
+            });
+
+            return bins;
+        }
+
+        function drawBarChart(pieces, remainingSpace, container) {
+            const chartWidth = 500;
+            const barHeight = 30;
+            const totalLength = pieces.reduce((sum, length) => sum + length, 0) + remainingSpace;
+            const colors = ['#1f77b4', '#aec7e8'];
+
+            const svg = d3.select(container)
+                .append('svg')
+                .attr('width', chartWidth)
+                .attr('height', barHeight);
+
+            const xScale = d3.scaleLinear()
+                .domain([0, totalLength])
+                .range([0, chartWidth]);
+
+            let offsetX = 0;
+            pieces.forEach((length, i) => {
+                svg.append('rect')
+                    .attr('x', xScale(offsetX))
+                    .attr('y', 0)
+                    .attr('width', xScale(length))
+                    .attr('height', barHeight)
+                    .attr('fill', colors[i % colors.length]);
+
+                svg.append('text')
+                    .attr('x', xScale(offsetX) + xScale(length) / 2)
+                    .attr('y', barHeight / 2 + 5)
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', '#fff')
+                    .style('font-size', '12px')
+                    .text(length);
+
+                offsetX += length;
+            });
+
+            if (remainingSpace > 0) {
+                svg.append('rect')
+                    .attr('x', xScale(offsetX))
+                    .attr('y', 0)
+                    .attr('width', xScale(remainingSpace))
+                    .attr('height', barHeight)
+                    .attr('fill', 'red');
+
+                svg.append('text')
+                    .attr('x', xScale(offsetX) + xScale(remainingSpace) / 2)
+                    .attr('y', barHeight / 2 + 5)
+                    .attr('text-anchor', 'middle')
+                    .attr('fill', '#fff')
+                    .style('font-size', '12px')
+                    .text(remainingSpace);
+            }
+        }
+
+        function displayResult(bins) {
+            const resultsDiv = document.getElementById('results');
+            const printableCutsDiv = document.getElementById('printableCuts');
+            resultsDiv.innerHTML = ``;
+            printableCutsDiv.innerHTML = ``; // Clear previous printable cuts
+
+            bins.sort((a, b) => a.remainingSpace - b.remainingSpace);
+
+            bins.forEach((bin, index) => {
+                const stickContainer = document.createElement('div');
+                stickContainer.classList.add('stick-result');
+
+                stickContainer.innerHTML = `
+                    <div class="stick-info">
+                        <strong>Stück ${index + 1}</strong>
+                        <span class="remaining-space" style="color: ${bin.remainingSpace === 0 ? 'green' : 'red'};">
+                            Verschnitt: ${bin.remainingSpace}
+                        </span>
+                    </div>
+                    <div class="cuts-list">
+                        Schnitte: ${bin.pieces.join('  |  ')}
+                    </div>
+                    <div class="cuts-chart"></div>`;
+
+                resultsDiv.appendChild(stickContainer);
+                printableCutsDiv.innerHTML += `Stück ${index + 1}: Schnitte: ${bin.pieces.join(', ')}<br/>`;
+
+                drawBarChart(bin.pieces, bin.remainingSpace, stickContainer.querySelector('.cuts-chart'));
+            });
+        }
+
+        function printCuts() {
+            const printableCutsDiv = document.getElementById('printableCuts');
+            printableCutsDiv.style.display = 'block'; // Show the printable cuts div
+            window.print(); // Open the print dialog
+            printableCutsDiv.style.display = 'none'; // Hide it again after printing
+        }
+    </script>
+
+</body>
+
+</html>
