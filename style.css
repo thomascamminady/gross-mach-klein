@@ -48,7 +48,7 @@ button {
 }
 
 input {
-    border: 1px solid #ccc;
+    border: 2px solid #ccc;
     outline-color: #f78e0e;
     /* Outline color for focus */
 }
@@ -123,4 +123,29 @@ button:hover {
         left: 0;
         top: 0;
     }
+}
+
+textarea {
+    font-family: 'Arial', sans-serif;
+    width: 100%;
+    padding: 15px;
+    margin: 10px 0 20px;
+    font-size: 1.2rem;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    outline-color: #f78e0e;
+    /* Outline color for focus */
+    resize: vertical;
+    /* Allow resizing only vertically */
+    overflow: auto;
+    /* Ensure a scrollbar appears when necessary */
+    min-height: 200px;
+    /* Set a reasonable minimum height */
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: black;
+    opacity: 0.3;
+    /* Ensures the color is fully opaque */
 }

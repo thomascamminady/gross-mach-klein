@@ -15,10 +15,10 @@
         <h1>Aus groß mach klein</h1>
 
         <label for="lengths">Gewünschte Schnittlängen (Komma-getrennt):</label><br>
-        <input type="text" id="lengths" placeholder="600,500,300,200,100,200,300,400,200"><br>
+        <textarea id="lengths" placeholder="z.B. 600,500,300,200,100,200,300,400,200"></textarea><br>
 
         <label for="longStickLength">Großes Maß:</label><br>
-        <input type="number" id="longStickLength" placeholder="1000"><br>
+        <input type="number" id="longStickLength" placeholder="z.B. 1000"><br>
 
         <button class="button-space" onclick="solveProblem()">Plan erstellen</button>
         <button class="button-space" id="printButton" style="display: none;" onclick="printCuts()">Drucken</button>
